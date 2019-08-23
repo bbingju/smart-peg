@@ -12,6 +12,8 @@
 
 #include "sensor_addr_tlb.h"
 
+#include "leds.h"
+
 static const char *TAG = "smart-peg";
 
 #define _I2C_NUMBER(num) I2C_NUM_##num
@@ -106,21 +108,17 @@ static void pca9535_write_register(uint8_t address, uint8_t data)
     i2c_cmd_link_delete(cmd);
 }
 
-struct led_state new_state;
-
 static void led_task(void *arg)
 {
+    leds_handle_t leds = leds_create(DEFAULT_PIXEL_WIDTH, DEFAULT_PIXEL_HEIGHT);
 
-    new_state.leds[0] = 0x010101;
-    new_state.leds[1] = 0x010101;
-    new_state.leds[2] = 0x010101;
-    new_state.leds[3] = 0x010101;
-    new_state.leds[4] = 0x010101;
-    sk6812_write_leds(new_state);
+    leds_fill_rect(leds,3,5,7,9, 0x000102);
+    leds_fill_rect(leds,0,2,4,5, 0x100002);
+    /* leds_set_color(leds,0,0,0x010000); */
     vTaskDelay(1000 / portTICK_PERIOD_MS);
 
     while (1) {
-        sk6812_write_leds(new_state);
+        leds_draw(leds);
         vTaskDelay(200 / portTICK_PERIOD_MS);
     }
 
@@ -131,17 +129,17 @@ static void sensor_task(void *arg)
 {
     while (1) {
 
-        for (int i = 0; i < SENSOR_NUMBER; i++) {
-            uint16_t data = sensor_read(i);
-            if (i == 0) {
-                new_state.leds[0] = (data & 0x0001) ? BLUE : 0x000000;
-                new_state.leds[1] = (data & 0x0002) ? BLUE : 0x000000;
-                new_state.leds[2] = (data & 0x0004) ? BLUE : 0x000000;
-                new_state.leds[3] = (data & 0x0008) ? BLUE : 0x000000;
-                new_state.leds[4] = (data & 0x0010) ? BLUE : 0x000000;
-            }
-            ESP_LOGI(TAG, "read sensor #%d data: 0x%04x", i, data);
-        }
+        /* for (int i = 0; i < SENSOR_NUMBER; i++) { */
+        /*     uint16_t data = sensor_read(i); */
+        /*     if (i == 0) { */
+        /*         new_state.leds[0] = (data & 0x0001) ? BLUE : 0x000000; */
+        /*         new_state.leds[1] = (data & 0x0002) ? BLUE : 0x000000; */
+        /*         new_state.leds[2] = (data & 0x0004) ? BLUE : 0x000000; */
+        /*         new_state.leds[3] = (data & 0x0008) ? BLUE : 0x000000; */
+        /*         new_state.leds[4] = (data & 0x0010) ? BLUE : 0x000000; */
+        /*     } */
+        /*     ESP_LOGI(TAG, "read sensor #%d data: 0x%04x", i, data); */
+        /* } */
         vTaskDelay(200 / portTICK_PERIOD_MS);
     }
 
@@ -153,7 +151,7 @@ void app_main(void)
     ESP_ERROR_CHECK(i2c_master_init());
 
     // LED init
-    sk6812_init();
+    /* sk6812_init(); */
 
     xTaskCreate(led_task, "led_task", 1024 * 2, (void *)0, 10, NULL);
     xTaskCreate(sensor_task, "sensor_task", 1024 * 2, (void *)0, 10, NULL);
