@@ -6,12 +6,6 @@
 #define DEFAULT_PIXEL_WIDTH   10
 #define DEFAULT_PIXEL_HEIGHT  10
 
-typedef enum leds_event_type {
-    LEDS_EVENT_TYPE_NONE,
-    LEDS_EVENT_SET_COLOR,
-    LEDS_EVENT_REQ_STATUS,
-} leds_event_type_t;
-
 typedef uint32_t color_t;
 
 struct pixel {
