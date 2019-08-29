@@ -20,6 +20,8 @@ static const char *TAG = "leds";
 #define T1L	6               // T1L for SK6812 -> 0.6 us
 #define TRS	800             // TRES for SK6812 -> 80 us
 
+#define RGB2GRB(v)    ((((v) & 0xff0000) >> 8) | (((v) & 0xff00) << 8) | ((v) & 0xff))
+
 struct leds {
     int width, height;
     struct pixel *pixels;
@@ -183,7 +185,7 @@ void leds_set_color(leds_handle_t handle, int x, int y, color_t color)
 
     int id = (y * obj->width) + x;
     struct pixel *p = obj->pixels + id;
-    p->color = color;
+    p->color = RGB2GRB(color);
 }
 
 
@@ -210,7 +212,7 @@ void leds_fill_rect(leds_handle_t handle, int x1, int y1, int x2, int y2, color_
         for (int j = x1; j < x1 + w; j++) {
             int id = (i * obj->width) + j;
             struct pixel *p = obj->pixels + id;
-            p->color = color;
+            p->color = RGB2GRB(color);
         }
     }
 }
