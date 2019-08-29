@@ -13,6 +13,7 @@ struct cmd_parser {
 
 static struct cmd_parser _p;
 
+#if 0
 /**
  * hex2int
  * take a hex string and convert it to a 32bit number (max 8 hex digits)
@@ -26,11 +27,12 @@ static uint32_t hex2int(char *hex) {
         if (byte >= '0' && byte <= '9') byte = byte - '0';
         else if (byte >= 'a' && byte <='f') byte = byte - 'a' + 10;
         else if (byte >= 'A' && byte <='F') byte = byte - 'A' + 10;
-        // shift 4 to make space for new digit, and add the 4 bits of the new digit 
+        // shift 4 to make space for new digit, and add the 4 bits of the new digit
         val = (val << 4) | (byte & 0xF);
     }
     return val;
 }
+#endif
 
 static uint32_t _value(mpc_ast_t *arg)
 {
@@ -143,20 +145,15 @@ int eval_commands(mpc_ast_t *root)
     for (int i = 1; i < root->children_num - 1; i++) {
 
         mpc_ast_t *cmd = root->children[i];
-        /* printf("%d: %s (%d)\n", i, cmd->tag, cmd->children_num); */
 
         if (cmd->children_num == 3) { // no args
             mpc_ast_t *f = cmd->children[1];
-            /* printf("function with no args: %s\n", f->contents); */
             post_event_0(f->contents);
         }
         else if (cmd->children_num == 4) { // args exist
             mpc_ast_t *f = cmd->children[1];
             mpc_ast_t *args = cmd->children[2];
             int argnum = args->children_num / 2;
-
-            /* printf("function: %s\n", f->contents); */
-            /* printf("args tags: %s (%d)\n", args->tag, args->children_num); */
 
             if (argnum == 1) {
                 post_event_1(f->contents, _value(args->children[1]));
@@ -172,17 +169,6 @@ int eval_commands(mpc_ast_t *root)
                 post_event_5(f->contents, _value(args->children[1]), _value(args->children[3]),
                                   _value(args->children[5]), _value(args->children[7]), _value(args->children[9]));
             }
-
-            /* // make args */
-            /* for (int j = 1; j < args->children_num; j += 2) { */
-            /*     mpc_ast_t *a = args->children[j]; */
-            /*     if (strstr(a->tag, "hexa")) { */
-            /*         /\* printf("args #%d: %d\n", j / 2, hex2int(&a->contents[2])); *\/ */
-            /*         printf("args #%d: %d\n", j / 2, (uint32_t) strtol(&a->contents[2], NULL, 16)); */
-            /*     } else if (strstr(a->tag, "decimal")) { */
-            /*         printf("args #%d: %d\n", j / 2, atoi(a->contents)); */
-            /*     } */
-            /* } */
         }
     }
 
