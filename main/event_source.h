@@ -22,6 +22,8 @@ enum {
     PEG_EVENT_LED_CLEAR,        //
     PEG_EVENT_LED_SET_PIXEL,    //
     PEG_EVENT_LED_FILL_RECT,
+
+    PEG_EVENT_MAG_STATUS,
 };
 
 #ifdef __cplusplus

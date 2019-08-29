@@ -56,6 +56,8 @@ static int post_event_0(const char *funcname)
         event = PEG_EVENT_LED_CLEAR;
     } else if (strcmp(funcname, "led_draw") == 0) {
         event = PEG_EVENT_LED_DRAW;
+    } else if (strcmp(funcname, "mag_status") == 0) {
+        event = PEG_EVENT_MAG_STATUS;
     } else {
         return -1;
     }

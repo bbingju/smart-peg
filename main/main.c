@@ -32,6 +32,8 @@ static const char *TAG = "smart-peg";
 
 static const esp_spp_mode_t esp_spp_mode = ESP_SPP_MODE_CB;
 
+static uint32_t bt_connection_handle;
+
 static struct timeval time_new, time_old;
 static long data_num = 0;
 
@@ -107,6 +109,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
     case ESP_SPP_SRV_OPEN_EVT:
         ESP_LOGI(TAG, "ESP_SPP_SRV_OPEN_EVT");
         gettimeofday(&time_old, NULL);
+        bt_connection_handle = param->srv_open.handle;
         break;
     default:
         break;
@@ -211,6 +214,9 @@ static char* get_id_string(esp_event_base_t base, int32_t id) {
         case PEG_EVENT_LED_FILL_RECT:
             event = "PEG_EVENT_LED_FILL_RECT";
             break;
+        case PEG_EVENT_MAG_STATUS:
+            event = "PEG_EVENT_MAG_STATUS";
+            break;
         }
     }
     return event;
@@ -247,6 +253,15 @@ static void app_loop_handler(void* handler_args, esp_event_base_t base, int32_t 
         leds_fill_rect(NULL, (int) d->args[0], (int) d->args[1], (int) d->args[2], (int) d->args[3], (color_t) d->args[4]);
         if (leds_direct_draw)
             leds_draw(NULL);
+        break;
+    }
+    case PEG_EVENT_MAG_STATUS: {
+        struct sensors_data *d =  sensors_read();
+        char buffer[100] = { 0 };
+        sprintf(buffer, "(mag_status,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x)\r\n",
+                d->data[0],d->data[1],d->data[2],d->data[3],d->data[4],
+                d->data[5],d->data[6],d->data[7],d->data[8],d->data[9]);
+        esp_spp_write(bt_connection_handle, strlen(buffer), (uint8_t *) buffer);
         break;
     }
 
