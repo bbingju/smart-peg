@@ -39,6 +39,7 @@ static const esp_spp_sec_t sec_mask = ESP_SPP_SEC_AUTHENTICATE;
 static const esp_spp_role_t role_slave = ESP_SPP_ROLE_SLAVE;
 
 static leds_handle_t leds;
+static int leds_direct_draw = true;
 
 /* Event source task related definitions */
 ESP_EVENT_DEFINE_BASE(PEG_EVENTS);
@@ -195,11 +196,20 @@ static char* get_id_string(esp_event_base_t base, int32_t id) {
     char* event = "";
     if (base == PEG_EVENTS) {
         switch (id) {
+        case PEG_EVENT_LED_SET_DIRECT_DRAW:
+            event = "PEG_EVENT_LED_SET_DIRECT_DRAW";
+            break;
+        case PEG_EVENT_LED_DRAW:
+            event = "PEG_EVENT_LED_DRAW";
+            break;
         case PEG_EVENT_LED_CLEAR:
             event = "PEG_EVENT_LED_CLEAR";
             break;
         case PEG_EVENT_LED_SET_PIXEL:
             event = "PEG_EVENT_LED_SET_PIXEL";
+            break;
+        case PEG_EVENT_LED_FILL_RECT:
+            event = "PEG_EVENT_LED_FILL_RECT";
             break;
         }
     }
@@ -212,14 +222,31 @@ static void app_loop_handler(void* handler_args, esp_event_base_t base, int32_t 
 
     switch (id) {
 
+    case PEG_EVENT_LED_SET_DIRECT_DRAW: {
+        struct peg_event_arg *d = event_data;
+        leds_direct_draw = d->args[0] ? true : false;
+        break;
+    }
+    case PEG_EVENT_LED_DRAW:
+        leds_draw(NULL);
+        break;
     case PEG_EVENT_LED_CLEAR:
         leds_clear(NULL);
-        leds_draw(NULL);
+        if (leds_direct_draw)
+            leds_draw(NULL);
         break;
     case PEG_EVENT_LED_SET_PIXEL: {
         struct peg_event_arg *d = event_data;
         leds_set_color(NULL, (int) d->args[0], (int) d->args[1], (color_t) d->args[2]);
-        leds_draw(NULL);
+        if (leds_direct_draw)
+            leds_draw(NULL);
+        break;
+    }
+    case PEG_EVENT_LED_FILL_RECT: {
+        struct peg_event_arg *d = event_data;
+        leds_fill_rect(NULL, (int) d->args[0], (int) d->args[1], (int) d->args[2], (int) d->args[3], (color_t) d->args[4]);
+        if (leds_direct_draw)
+            leds_draw(NULL);
         break;
     }
 

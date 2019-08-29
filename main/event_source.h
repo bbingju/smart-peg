@@ -17,8 +17,11 @@ struct peg_event_arg {
 ESP_EVENT_DECLARE_BASE(PEG_EVENTS);         // declaration of the task events family
 
 enum {
+    PEG_EVENT_LED_SET_DIRECT_DRAW,  //
+    PEG_EVENT_LED_DRAW,
     PEG_EVENT_LED_CLEAR,        //
     PEG_EVENT_LED_SET_PIXEL,    //
+    PEG_EVENT_LED_FILL_RECT,
 };
 
 #ifdef __cplusplus

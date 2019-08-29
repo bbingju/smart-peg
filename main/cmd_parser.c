@@ -47,34 +47,42 @@ static uint32_t _value(mpc_ast_t *arg)
 
 static int post_event_0(const char *funcname)
 {
-    esp_event_post(PEG_EVENTS, PEG_EVENT_LED_CLEAR, NULL, 0, portMAX_DELAY);
+    int event = 0;
+    struct peg_event_arg data = { 0 };
+
+    if (strcmp(funcname, "led_clear") == 0) {
+        event = PEG_EVENT_LED_CLEAR;
+    } else if (strcmp(funcname, "led_draw") == 0) {
+        event = PEG_EVENT_LED_DRAW;
+    } else {
+        return -1;
+    }
+
+    esp_event_post(PEG_EVENTS, event, NULL, 0, portMAX_DELAY);
     return 0;
 }
 
 static int post_event_1(const char *funcname, uint32_t a1)
 {
-    /* int event; */
-    /* struct peg_event_arg data = { 0 }; */
+    int event = 0;
+    struct peg_event_arg data = { 0 };
 
-    return -1;
+    if (strcmp(funcname, "led_set_direct_draw") == 0) {
+        event = PEG_EVENT_LED_SET_DIRECT_DRAW;
+    } else {
+        return -1;
+    }
 
-    /* data.argnum = 1; */
-    /* data.args[0] = a1; */
+    data.argnum = 1;
+    data.args[0] = a1;
 
-    /* esp_event_post(PEG_EVENTS, PEG_EVENT_LED_CLEAR, &data, sizeof(data), portMAX_DELAY); */
+    esp_event_post(PEG_EVENTS, event, &data, sizeof(data), portMAX_DELAY);
 
-    /* return 0; */
+    return 0;
 }
 
 static int post_event_2(const char *funcname, uint32_t a1, uint32_t a2)
 {
-    /* struct peg_event_arg data = { 0 }; */
-    /* data.argnum = 2; */
-    /* data.args[0] = a1; */
-    /* data.args[1] = a2; */
-
-    /* esp_event_post(PEG_EVENTS, PEG_EVENT_LED_CLEAR, &data, sizeof(data), portMAX_DELAY); */
-
     return -1;
 }
 
@@ -94,29 +102,26 @@ static int post_event_3(const char *funcname, uint32_t a1, uint32_t a2, uint32_t
     data.args[1] = a2;
     data.args[2] = a3;
 
-    esp_event_post(PEG_EVENTS, PEG_EVENT_LED_SET_PIXEL, &data, sizeof(data), portMAX_DELAY);
+    esp_event_post(PEG_EVENTS, event, &data, sizeof(data), portMAX_DELAY);
 
     return 0;
 }
 
 static int post_event_4(const char *funcname, uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4)
 {
-    /* struct peg_event_arg data = { 0 }; */
-
-    /* data.argnum = 4; */
-    /* data.args[0] = a1; */
-    /* data.args[1] = a2; */
-    /* data.args[2] = a3; */
-    /* data.args[3] = a4; */
-
-    /* esp_event_post(PEG_EVENTS, PEG_EVENT_LED_CLEAR, &data, sizeof(data), portMAX_DELAY); */
-
     return -1;
 }
 
 static int post_event_5(const char *funcname, uint32_t a1, uint32_t a2, uint32_t a3, uint32_t a4, uint32_t a5)
 {
+    int event = 0;
     struct peg_event_arg data = { 0 };
+
+    if (strcmp(funcname, "led_fill_rect") == 0) {
+        event = PEG_EVENT_LED_FILL_RECT;
+    } else {
+        return -1;
+    }
 
     data.argnum = 5;
     data.args[0] = a1;
@@ -125,7 +130,7 @@ static int post_event_5(const char *funcname, uint32_t a1, uint32_t a2, uint32_t
     data.args[3] = a4;
     data.args[4] = a5;
 
-    esp_event_post(PEG_EVENTS, PEG_EVENT_LED_CLEAR, &data, sizeof(data), portMAX_DELAY);
+    esp_event_post(PEG_EVENTS, event, &data, sizeof(data), portMAX_DELAY);
 
     return 0;
 }
