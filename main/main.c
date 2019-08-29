@@ -258,9 +258,9 @@ static void app_loop_handler(void* handler_args, esp_event_base_t base, int32_t 
     case PEG_EVENT_MAG_STATUS: {
         struct sensors_data *d =  sensors_read();
         char buffer[100] = { 0 };
-        sprintf(buffer, "(mag_status,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x)\r\n",
+        sprintf(buffer, "(mag_status,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x,0x%04x)\r\n",
                 d->data[0],d->data[1],d->data[2],d->data[3],d->data[4],
-                d->data[5],d->data[6],d->data[7],d->data[8],d->data[9]);
+                d->data[5],d->data[6],d->data[7],d->data[8],d->data[9],d->data[10]);
         esp_spp_write(bt_connection_handle, strlen(buffer), (uint8_t *) buffer);
         break;
     }

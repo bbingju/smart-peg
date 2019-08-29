@@ -4,7 +4,7 @@
 #include "esp_err.h"
 
 struct sensors_data {
-    uint16_t data[10];
+    uint16_t data[11];
 };
 
 esp_err_t sensors_init();

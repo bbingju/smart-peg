@@ -149,6 +149,7 @@ struct sensors_data * sensors_read()
             break;
         case 6:
             d.data[9] |= (v & 0b0000000000001111) << 6; /* 0x000F */
+            d.data[10] = (v & 0b0011111111110000) >> 4; /* 0x3FF0 */
             break;
         default:
             break;
@@ -156,10 +157,6 @@ struct sensors_data * sensors_read()
     }
 
     sd = d;
-
-    /* ESP_LOGI(TAG, "\nrow #0: 0x%04x\nrow #1: 0x%04x\nrow #2: 0x%04x\nrow #3: 0x%04x\nrow #4: 0x%04x\n" */
-    /*          "row #5: 0x%04x\nrow #6: 0x%04x\nrow #7: 0x%04x\nrow #8: 0x%04x\nrow #9: 0x%04x", */
-    /*          d.data[0],d.data[1],d.data[2],d.data[3],d.data[4],d.data[5],d.data[6],d.data[7],d.data[8],d.data[9]); */
 
     return &sd;
 }
