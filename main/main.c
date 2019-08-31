@@ -167,34 +167,6 @@ void esp_bt_gap_cb(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param)
     return;
 }
 
-/* static void led_task(void *arg) */
-/* { */
-/*     leds_fill_rect(leds,3,5,7,9, 0x000101); */
-/*     leds_draw(leds); */
-/*     leds_fill_rect(leds,0,2,4,5, 0x010001); */
-/*     leds_fill_rect(leds,5,1,9,4, 0x000100); */
-/*     leds_draw(leds); */
-/*     /\* leds_set_color(leds,0,0,0x010000); *\/ */
-/*     vTaskDelay(1000 / portTICK_PERIOD_MS); */
-
-/*     while (1) { */
-/*         leds_draw(leds); */
-/*         vTaskDelay(500 / portTICK_PERIOD_MS); */
-/*     } */
-
-/*     vTaskDelete(NULL); */
-/* } */
-
-/* static void sensor_task(void *arg) */
-/* { */
-/*     while (1) { */
-/*         struct sensors_data *data =  sensors_read(); */
-/*         vTaskDelay(500 / portTICK_PERIOD_MS); */
-/*     } */
-
-/*     vTaskDelete(NULL); */
-/* } */
-
 static char* get_id_string(esp_event_base_t base, int32_t id) {
     char* event = "";
     if (base == PEG_EVENTS) {
@@ -340,7 +312,4 @@ void app_main()
 
     ESP_ERROR_CHECK(esp_event_loop_create_default());
     ESP_ERROR_CHECK(esp_event_handler_register(PEG_EVENTS, ESP_EVENT_ANY_ID, app_loop_handler, NULL));
-
-    /* xTaskCreate(led_task, "led_task", 1024 * 3, (void *)0, 10, NULL); */
-    /* xTaskCreate(sensor_task, "sensor_task", 1024 * 3, (void *)0, 10, NULL); */
 }
