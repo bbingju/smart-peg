@@ -98,7 +98,9 @@ static uint16_t sensor_read(int id)
 {
     struct sensor_addr_tlb *r = &sensor_addr_tlb[id];
     uint8_t data_h, data_l;
-    ESP_ERROR_CHECK(pca9535_read_register(r->address, &data_h, &data_l));
+
+    if (pca9535_read_register(r->address, &data_h, &data_l) != ESP_OK)
+        return 0;
 
     data_h = ~(data_h);
     data_l = ~(data_l);
