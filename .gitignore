@@ -1,4 +1,6 @@
 smart-peg
+build/
+sdkconfig
 *~
 
 ### C ###
