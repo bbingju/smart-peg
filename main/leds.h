@@ -17,6 +17,7 @@ struct pixel {
 typedef struct leds * leds_handle_t;
 
 #ifdef __cplusplus
+extern "C" {
 #endif
 
 extern leds_handle_t leds_create(int width, int height);
@@ -29,6 +30,7 @@ extern void leds_fill_rect(leds_handle_t handle, int x1, int y1, int x2, int y2,
 extern void leds_draw(leds_handle_t handle);
 
 #ifdef __cplusplus
+}
 #endif
 
 #endif /* LEDS_H */
