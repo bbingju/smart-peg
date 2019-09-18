@@ -51,8 +51,6 @@ static int leds_direct_draw = true;
 /* Event source task related definitions */
 ESP_EVENT_DEFINE_BASE(PEG_EVENTS);
 
-TaskHandle_t g_task;
-
 
 static void print_speed(void)
 {
