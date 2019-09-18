@@ -13,6 +13,7 @@
 #include "esp_spp_api.h"
 #include "event_source.h"
 #include "esp_event_base.h"
+#include "driver/gpio.h"
 
 #include "time.h"
 #include "sys/time.h"
@@ -29,6 +30,10 @@ static const char *TAG = "smart-peg";
 #define SPP_SHOW_SPEED 1
 //#define SPP_SHOW_MODE SPP_SHOW_SPEED    /*Choose show mode: show data or speed*/
 #define SPP_SHOW_MODE SPP_SHOW_DATA    /*Choose show mode: show data or speed*/
+
+#define POWERON_GPIO   GPIO_NUM_16
+#define BT_GPIO        GPIO_NUM_17
+#define GPIO_OUTPUT_PIN_SEL  ((1ULL<<POWERON_GPIO) | (1ULL<<BT_GPIO))
 
 static const esp_spp_mode_t esp_spp_mode = ESP_SPP_MODE_CB;
 
@@ -78,6 +83,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         break;
     case ESP_SPP_CLOSE_EVT:
         ESP_LOGI(TAG, "ESP_SPP_CLOSE_EVT");
+        gpio_set_level(BT_GPIO, 0);
         break;
     case ESP_SPP_START_EVT:
         ESP_LOGI(TAG, "ESP_SPP_START_EVT");
@@ -110,6 +116,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
         ESP_LOGI(TAG, "ESP_SPP_SRV_OPEN_EVT");
         gettimeofday(&time_old, NULL);
         bt_connection_handle = param->srv_open.handle;
+        gpio_set_level(BT_GPIO, 1);
         break;
     default:
         break;
@@ -248,6 +255,17 @@ void app_main()
         ret = nvs_flash_init();
     }
     ESP_ERROR_CHECK( ret );
+
+    gpio_config_t io_conf;
+    io_conf.intr_type = GPIO_PIN_INTR_DISABLE;
+    io_conf.mode = GPIO_MODE_OUTPUT;
+    io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL;
+    io_conf.pull_down_en = 0;
+    io_conf.pull_up_en = 0;
+    gpio_config(&io_conf);
+
+    gpio_set_level(POWERON_GPIO, 1);
+    gpio_set_level(BT_GPIO, 0);
 
     ESP_ERROR_CHECK(esp_bt_controller_mem_release(ESP_BT_MODE_BLE));
 
