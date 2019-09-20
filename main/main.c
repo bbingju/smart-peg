@@ -26,6 +26,8 @@ static const char *TAG = "smart-peg";
 
 #define SPP_SERVER_NAME "SMART_PEG_SPP_SERVER"
 #define DEVICE_NAME "SMART_PEG"
+#define IDF_VER_MAJOR  (3)
+
 #define SPP_SHOW_DATA 0
 #define SPP_SHOW_SPEED 1
 //#define SPP_SHOW_MODE SPP_SHOW_SPEED    /*Choose show mode: show data or speed*/
@@ -72,7 +74,11 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
     case ESP_SPP_INIT_EVT:
         ESP_LOGI(TAG, "ESP_SPP_INIT_EVT");
         esp_bt_dev_set_device_name(DEVICE_NAME);
+#if IDF_VER_MAJOR == 4
         esp_bt_gap_set_scan_mode(ESP_BT_CONNECTABLE, ESP_BT_GENERAL_DISCOVERABLE);
+#else
+        esp_bt_gap_set_scan_mode(ESP_BT_SCAN_MODE_CONNECTABLE_DISCOVERABLE);
+#endif
         esp_spp_start_srv(sec_mask,role_slave, 0, SPP_SERVER_NAME);
         break;
     case ESP_SPP_DISCOVERY_COMP_EVT:
