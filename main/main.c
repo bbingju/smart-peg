@@ -24,10 +24,10 @@
 
 static const char *TAG = "smart-peg";
 
-#define SPP_SERVER_NAME "SMART_PEG_SPP_SERVER"
-#define DEVICE_NAME "SMART_PEG"
 #define IDF_VER_MAJOR  (3)
 
+#define SPP_SERVER_NAME "SPP_SERVER"
+#define DEVICE_NAME "SMART_PEG"
 #define SPP_SHOW_DATA 0
 #define SPP_SHOW_SPEED 1
 //#define SPP_SHOW_MODE SPP_SHOW_SPEED    /*Choose show mode: show data or speed*/
@@ -56,6 +56,19 @@ esp_event_loop_handle_t app_loop;
 ESP_EVENT_DEFINE_BASE(PEG_EVENTS);
 
 
+static const char * get_bt_device_name()
+{
+    uint8_t bt_mac_addr[6] = { 0 };
+    uint16_t last_2_bytes = 0;
+    static char bt_name[32] = { 0 };
+
+    esp_read_mac(bt_mac_addr, 2);
+    last_2_bytes = *((uint16_t *)&bt_mac_addr[4]);
+    sprintf(bt_name, "%s_%04X", DEVICE_NAME, last_2_bytes);
+    return bt_name;
+}
+
+
 static void print_speed(void)
 {
     float time_old_s = time_old.tv_sec + time_old.tv_usec / 1000000.0;
@@ -73,7 +86,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param)
     switch (event) {
     case ESP_SPP_INIT_EVT:
         ESP_LOGI(TAG, "ESP_SPP_INIT_EVT");
-        esp_bt_dev_set_device_name(DEVICE_NAME);
+        esp_bt_dev_set_device_name(get_bt_device_name());
 #if IDF_VER_MAJOR == 4
         esp_bt_gap_set_scan_mode(ESP_BT_CONNECTABLE, ESP_BT_GENERAL_DISCOVERABLE);
 #else
