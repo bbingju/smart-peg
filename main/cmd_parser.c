@@ -216,7 +216,7 @@ int cmd_parser_eval(const char *str, int n)
         mpc_ast_delete(r.output);
 
     } else {
-        mpc_err_print(r.error);
+        // mpc_err_print(r.error);
         mpc_err_delete(r.error);
     }
 
