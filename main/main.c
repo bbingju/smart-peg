@@ -48,6 +48,8 @@ static const esp_spp_role_t role_slave = ESP_SPP_ROLE_SLAVE;
 static leds_handle_t leds;
 static int leds_direct_draw = true;
 
+esp_event_loop_handle_t app_loop;
+
 /* Event source task related definitions */
 ESP_EVENT_DEFINE_BASE(PEG_EVENTS);
 
@@ -326,6 +328,14 @@ void app_main()
     leds = leds_create(DEFAULT_PIXEL_WIDTH, DEFAULT_PIXEL_HEIGHT);
     ESP_ERROR_CHECK(sensors_init());
 
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-    ESP_ERROR_CHECK(esp_event_handler_register(PEG_EVENTS, ESP_EVENT_ANY_ID, app_loop_handler, NULL));
+    esp_event_loop_args_t app_loop_args = {
+        .queue_size = 5,
+        .task_name = "app_loop_task",
+        .task_priority = uxTaskPriorityGet(NULL),
+        .task_stack_size = 2048,
+        .task_core_id = tskNO_AFFINITY
+    };
+
+    ESP_ERROR_CHECK(esp_event_loop_create(&app_loop_args, &app_loop));
+    ESP_ERROR_CHECK(esp_event_handler_register_with(app_loop, PEG_EVENTS, ESP_EVENT_ANY_ID, app_loop_handler, app_loop));
 }

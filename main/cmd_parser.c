@@ -13,6 +13,8 @@ struct cmd_parser {
 
 static struct cmd_parser _p;
 
+extern esp_event_loop_handle_t app_loop;
+
 #if 0
 /**
  * hex2int
@@ -62,7 +64,7 @@ static int post_event_0(const char *funcname)
         return -1;
     }
 
-    esp_event_post(PEG_EVENTS, event, NULL, 0, portMAX_DELAY);
+    esp_event_post_to(app_loop, PEG_EVENTS, event, NULL, 0, portMAX_DELAY);
     return 0;
 }
 
@@ -80,7 +82,7 @@ static int post_event_1(const char *funcname, uint32_t a1)
     data.argnum = 1;
     data.args[0] = a1;
 
-    esp_event_post(PEG_EVENTS, event, &data, sizeof(data), portMAX_DELAY);
+    esp_event_post_to(app_loop, PEG_EVENTS, event, &data, sizeof(data), portMAX_DELAY);
 
     return 0;
 }
@@ -106,7 +108,7 @@ static int post_event_3(const char *funcname, uint32_t a1, uint32_t a2, uint32_t
     data.args[1] = a2;
     data.args[2] = a3;
 
-    esp_event_post(PEG_EVENTS, event, &data, sizeof(data), portMAX_DELAY);
+    esp_event_post_to(app_loop, PEG_EVENTS, event, &data, sizeof(data), portMAX_DELAY);
 
     return 0;
 }
@@ -134,7 +136,7 @@ static int post_event_5(const char *funcname, uint32_t a1, uint32_t a2, uint32_t
     data.args[3] = a4;
     data.args[4] = a5;
 
-    esp_event_post(PEG_EVENTS, event, &data, sizeof(data), portMAX_DELAY);
+    esp_event_post_to(app_loop, PEG_EVENTS, event, &data, sizeof(data), portMAX_DELAY);
 
     return 0;
 }
