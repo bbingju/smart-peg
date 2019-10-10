@@ -1,4 +1,6 @@
 #include "sensors.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_log.h"
 #include "driver/i2c.h"
 
@@ -37,6 +39,8 @@ struct sensor_addr_tlb sensor_addr_tlb[SENSOR_NUMBER] = {
     { 5, 0x25 },
     { 6, 0x26 },
 };
+
+static struct sensors_data sd = { 0 };
 
 /**
  * @brief i2c master initialization
@@ -108,57 +112,79 @@ static uint16_t sensor_read(int id)
     return ((data_h << 8) | (data_l));
 }
 
-esp_err_t sensors_init( )
+static SemaphoreHandle_t mutex;
+
+static void sensors_reading_task(void *arg)
 {
-    return i2c_master_init();
+    while (1) {
+
+        struct sensors_data d = { 0 };
+        for (int i = 0; i < SENSOR_NUMBER; i++) {
+            uint16_t v = sensor_read(i);
+            ESP_LOGV(TAG, "read sensor #%d data: 0x%04x", i, v);
+
+            switch (i) {
+            case 0:
+                d.data[0] = (v & 0b0000001111111111);       /* 0x03FF */
+                d.data[1] = (v & 0b1111110000000000) >> 10; /* 0xFC00 */
+                break;
+            case 1:
+                d.data[1] |= (v & 0b0000000000001111) << 6;  /* 0x000F */
+                d.data[2]  = (v & 0b0011111111110000) >> 4;  /* 0x3FF0 */
+                d.data[3]  = (v & 0b1100000000000000) >> 14; /* 0xC000 */
+                break;
+            case 2:
+                d.data[3] |= (v & 0b0000000011111111) << 2;
+                d.data[4]  = (v & 0b1111111100000000) >> 8;
+                break;
+            case 3:
+                d.data[4] |= (v & 0b0000000000000011) << 8;
+                d.data[5]  = (v & 0b0000111111111100) >> 2;
+                d.data[6]  = (v & 0b1111000000000000) >> 12;
+                break;
+            case 4:
+                d.data[6] |= (v & 0b0000000000111111) << 4;
+                d.data[7]  = (v & 0b1111111111000000) >> 6;
+                break;
+            case 5:
+                d.data[8]  = (v & 0b0000001111111111);       /* 0x03FF */
+                d.data[9]  = (v & 0b1111110000000000) >> 10; /* 0xFC00 */
+                break;
+            case 6:
+                d.data[9] |= (v & 0b0000000000001111) << 6; /* 0x000F */
+                d.data[10] = (v & 0b0011111111110000) >> 4; /* 0x3FF0 */
+                break;
+            default:
+                break;
+            }
+        }
+
+        if (xSemaphoreTake(mutex, (TickType_t) 2 ) != pdTRUE) {
+           sd = d;
+           xSemaphoreGive(mutex);
+       }
+
+        vTaskDelay(pdMS_TO_TICKS(700));
+    }
 }
 
-static struct sensors_data sd = { 0 };
+esp_err_t sensors_init( )
+{
+    i2c_master_init();
+    mutex = xSemaphoreCreateMutex();
+    xTaskCreatePinnedToCore(sensors_reading_task, "sensors_reading", 2048, NULL, 2, NULL, 1);
+
+    return ESP_OK;
+}
 
 struct sensors_data * sensors_read()
 {
-    struct sensors_data d = { 0 };
-    for (int i = 0; i < SENSOR_NUMBER; i++) {
-        uint16_t v = sensor_read(i);
-        /* ESP_LOGI(TAG, "read sensor #%d data: 0x%04x", i, v); */
+    static struct sensors_data temp = { 0 };
 
-        switch (i) {
-        case 0:
-            d.data[0] = (v & 0b0000001111111111);       /* 0x03FF */
-            d.data[1] = (v & 0b1111110000000000) >> 10; /* 0xFC00 */
-            break;
-        case 1:
-            d.data[1] |= (v & 0b0000000000001111) << 6;  /* 0x000F */
-            d.data[2]  = (v & 0b0011111111110000) >> 4;  /* 0x3FF0 */
-            d.data[3]  = (v & 0b1100000000000000) >> 14; /* 0xC000 */
-            break;
-        case 2:
-            d.data[3] |= (v & 0b0000000011111111) << 2;
-            d.data[4]  = (v & 0b1111111100000000) >> 8;
-            break;
-        case 3:
-            d.data[4] |= (v & 0b0000000000000011) << 8;
-            d.data[5]  = (v & 0b0000111111111100) >> 2;
-            d.data[6]  = (v & 0b1111000000000000) >> 12;
-            break;
-        case 4:
-            d.data[6] |= (v & 0b0000000000111111) << 4;
-            d.data[7]  = (v & 0b1111111111000000) >> 6;
-            break;
-        case 5:
-            d.data[8]  = (v & 0b0000001111111111);       /* 0x03FF */
-            d.data[9]  = (v & 0b1111110000000000) >> 10; /* 0xFC00 */
-            break;
-        case 6:
-            d.data[9] |= (v & 0b0000000000001111) << 6; /* 0x000F */
-            d.data[10] = (v & 0b0011111111110000) >> 4; /* 0x3FF0 */
-            break;
-        default:
-            break;
-        }
+    if (xSemaphoreTake(mutex, (TickType_t) 2 ) == pdTRUE) {
+        temp = sd;
+        xSemaphoreGive(mutex);
     }
 
-    sd = d;
-
-    return &sd;
+    return &temp;
 }
