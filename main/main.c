@@ -348,10 +348,10 @@ void app_main()
     ESP_ERROR_CHECK(sensors_init());
 
     esp_event_loop_args_t app_loop_args = {
-        .queue_size = 5,
+        .queue_size = 12,
         .task_name = "app_loop_task",
         .task_priority = uxTaskPriorityGet(NULL),
-        .task_stack_size = 2048,
+        .task_stack_size = 4096 * 2,
         .task_core_id = tskNO_AFFINITY
     };
 

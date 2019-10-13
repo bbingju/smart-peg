@@ -164,7 +164,7 @@ static void sensors_reading_task(void *arg)
            xSemaphoreGive(mutex);
        }
 
-        vTaskDelay(pdMS_TO_TICKS(700));
+        vTaskDelay(pdMS_TO_TICKS(5));
     }
 }
 
@@ -172,7 +172,7 @@ esp_err_t sensors_init( )
 {
     i2c_master_init();
     mutex = xSemaphoreCreateMutex();
-    xTaskCreatePinnedToCore(sensors_reading_task, "sensors_reading", 2048, NULL, 2, NULL, 1);
+    xTaskCreatePinnedToCore(sensors_reading_task, "sensors_reading", 4096, NULL, 2, NULL, 1);
 
     return ESP_OK;
 }
