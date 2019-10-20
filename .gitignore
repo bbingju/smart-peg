@@ -2,6 +2,8 @@ smart-peg
 build/
 sdkconfig
 *~
+.dir-locals.el
+.ccls-cache/
 
 ### C ###
 # Prerequisites
