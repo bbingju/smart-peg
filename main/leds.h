@@ -20,14 +20,14 @@ typedef struct leds * leds_handle_t;
 extern "C" {
 #endif
 
-extern leds_handle_t leds_create(int width, int height);
-extern void leds_destroy(leds_handle_t handle);
+  leds_handle_t leds_create(int width, int height);
+  void leds_destroy(leds_handle_t handle);
 
-extern void leds_clear(leds_handle_t handle);
-extern void leds_set_color(leds_handle_t handle, int x, int y, color_t color);
-extern void leds_fill_rect(leds_handle_t handle, int x1, int y1, int x2, int y2, color_t color);
+  void leds_clear(leds_handle_t handle);
+  void leds_set_color(leds_handle_t handle, int x, int y, color_t color);
+  void leds_fill_rect(leds_handle_t handle, int x1, int y1, int x2, int y2, color_t color);
 
-extern void leds_draw(leds_handle_t handle);
+  void leds_draw(leds_handle_t handle);
 
 #ifdef __cplusplus
 }
