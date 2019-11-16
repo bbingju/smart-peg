@@ -1,5 +1,9 @@
 #+TITLE: Smart PEG
-#+OPTIONS: toc:nil
+#+OPTIONS: toc:t title:t email:t d:t
+#+AUTHOR: Phil Hwang
+#+EMAIL: pjhwang@gmail.com
+#+LANGUAGE: ko
+#+SETUPFILE: https://fniessen.github.io/org-html-themes/setup/theme-readtheorg.setup
 
 * Overview
 
@@ -11,7 +15,7 @@
   
   시스템 구성은 대략 아래 그림과 같으며, 이 소스는 그림에서 보드에 해당한다.
 
-  #+BEGIN_SRC ditaa :file doc/pic/smart-peg-system.png :cmdline -E
+  #+BEGIN_SRC ditaa :file doc/pic/smart-peg-system.png :cmdline -E :results file drawer
 
     /------------------\                                     +--------+    
     | Smart PEG Board  |                                     | Apps   |    
@@ -24,7 +28,9 @@
   #+END_SRC
 
   #+RESULTS:
+  :RESULTS:
   [[file:doc/pic/smart-peg-system.png]]
+  :END:
 
   아래 그림은 실제 PCB 사진이다. 10x10 LED를 가지고 있으며 각 LED가
   박힌 반대편에는 자석센서가 붙어 있다.
