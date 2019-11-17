@@ -15,7 +15,7 @@
   
   시스템 구성은 대략 아래 그림과 같으며, 이 소스는 그림에서 보드에 해당한다.
 
-  #+BEGIN_SRC ditaa :file doc/pic/smart-peg-system.png :cmdline -E :results file drawer
+  #+BEGIN_SRC ditaa :file doc/pic/smart-peg-system.png :cmdline -E :results file :exports results
 
     /------------------\                                     +--------+    
     | Smart PEG Board  |                                     | Apps   |    
