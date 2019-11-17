@@ -17,8 +17,8 @@
 
   #+BEGIN_SRC ditaa :file doc/pic/smart-peg-system.png :cmdline -E :results file :exports results
 
-    /------------------\                                     +--------+    
-    | Smart PEG Board  |                                     | Apps   |    
+    /------------------\                                     +--------+ 
+    | Smart PEG Board  |                                     | Apps   | 
     | c1AB             |    Classic Bluetooth SPP Profile    |        |
     |                  | <---------------------------------> |        | 
     |                  |                                     |        |
@@ -28,9 +28,7 @@
   #+END_SRC
 
   #+RESULTS:
-  :RESULTS:
   [[file:doc/pic/smart-peg-system.png]]
-  :END:
 
   아래 그림은 실제 PCB 사진이다. 10x10 LED를 가지고 있으며 각 LED가
   박힌 반대편에는 자석센서가 붙어 있다.
